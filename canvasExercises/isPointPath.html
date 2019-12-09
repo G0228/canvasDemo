@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="margin: 0;">
+    <canvas id="canvas" style="display: block;">当前浏览器不支持Canvas，请更换浏览器后再试</canvas>
+    <script>
+        var balls = [];
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        window.onload = function() {
+
+            canvas.width = document.documentElement.clientWidth;
+            canvas.height = document.documentElement.clientHeight;
+
+            for(let i = 0; i < 10; i++) {
+                var aBall = {x: Math.random() * canvas.width, y: Math.random() * canvas.height,r: Math.random() * 50 + 20};
+                balls[i] = aBall;
+            }
+
+            draw();
+            canvas.addEventListener('mousemove', detect);
+            // canvas.addEventListener('mouseup', detect);
+
+        }
+
+        // mouseup
+        // function draw() {
+        //     for(let i = 0; i < balls.length; i++) {
+        //         ctx.beginPath();
+        //         ctx.arc(balls[i].x, balls[i].y, balls[i].r, 0, Math.PI * 2);
+        //         ctx.fillStyle = '#058';
+        //         ctx.fill();
+        //     }
+        // }
+
+        // mousemove
+        function draw(x, y) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for(let i = 0; i < balls.length; i++) {
+                ctx.beginPath();
+                ctx.arc(balls[i].x, balls[i].y, balls[i].r, 0, Math.PI * 2);
+                if(ctx.isPointInPath(x, y)){
+                    ctx.fillStyle = 'red'
+                }else{
+                    ctx.fillStyle = '#058';
+                }
+                ctx.fill();
+            }
+        }
+
+        function detect(event) {
+            var x = event.clientX - canvas.getBoundingClientRect().left;
+            var y = event.clientY - canvas.getBoundingClientRect().top;
+
+            // mouseup
+            // for(let i = 0; i < balls.length; i++) {
+            //     ctx.beginPath();
+            //     ctx.arc(balls[i].x, balls[i].y, balls[i].r, 0, Math.PI * 2);
+            //     if(ctx.isPointInPath(x, y)){
+            //         ctx.fillStyle = 'red';
+            //         ctx.fill();
+            //     }
+            // }
+
+            // mousemove
+            draw(x, y)
+        }
+
+
+    </script>
+</body>
+</html>

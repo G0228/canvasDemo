@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="margin: 0;">
+    <canvas id="canvas" style="display: block;">当前浏览器不支持Canvas，请更换浏览器后再试</canvas>
+    <script>
+        window.onload = function() {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+
+            canvas.width = document.documentElement.clientWidth;
+            canvas.height = document.documentElement.clientHeight;
+
+            ctx.font = 'bold 40px Arial';
+            ctx.fillStyle = '#058';
+            ctx.fillText('Hello', 40, 100);
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#058';
+            ctx.strokeText('Hello', 40, 200);
+
+            ctx.fillText('Hello', 40, 300, 50);
+            ctx.strokeText('Hello', 40, 400, 50);
+
+            var linearGrad = ctx.createLinearGradient(0, 0, 800, 0);
+            linearGrad.addColorStop(0.0, 'red');
+            linearGrad.addColorStop(0.25, 'yellow');
+            linearGrad.addColorStop(0.5, 'green');
+            linearGrad.addColorStop(0.75, 'blue');
+            linearGrad.addColorStop(1.0, 'purple');
+            ctx.fillStyle = linearGrad;
+            ctx.fillText('Hello, world', 40, 500)
+
+        }
+    </script>
+</body>
+</html>

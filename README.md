@@ -1,2 +1,2 @@
 # canvasDemo
-canvas小案例
+canvas练习

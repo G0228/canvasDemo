@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="margin: 0;">
+    <canvas id="canvas" style="display: block;">当前浏览器不支持Canvas，请更换浏览器后再试</canvas>
+    <script>
+        window.onload = function() {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+
+            canvas.width = document.documentElement.clientWidth;
+            canvas.height = document.documentElement.clientHeight;
+
+            // // 线性渐变
+            // var skyStyle = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            // skyStyle.addColorStop(0.0, 'black');
+            // skyStyle.addColorStop(1.0, '#035');
+            // ctx.fillStyle = skyStyle;
+            // ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            // // 径向渐变
+            // var skyStyle = ctx.createRadialGradient(canvas.width / 2, canvas.height, 0, canvas.width / 2, canvas.height, canvas.height);
+            // skyStyle.addColorStop(0.0, '#035');
+            // skyStyle.addColorStop(1.0, 'black');
+            // ctx.fillStyle = skyStyle;
+            // ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            // // 画星星
+            // for(let i = 0; i < 200; i ++) {
+            //     var r = Math.random() * 5 + 5;
+            //     var x = Math.random() * canvas.width;
+            //     var y = Math.random() * canvas.height * 0.65;
+            //     var a = Math.random() * 360;
+            //     drawStar(ctx, x, y, r, a)
+            // }
+
+            // ctx.fillStyle = "red";
+            // ctx.strokeStyle = "#058";
+            // ctx.lineWidth = 5;
+            // ////////////////////////////
+            // // a c e
+            // // b d f
+            // // 0 0 1
+            // ////////////////////////////
+            // // a,d 水平、垂直缩放
+            // // b,c 水平、垂直倾斜
+            // // e,f 水平、垂直位移
+            // ////////////////////////////
+            // ctx.save();
+            // ctx.transform(2, 0.2, 0.2, 1.5, 50, 100);
+            // ctx.fillRect(50, 50, 300, 300);
+            // ctx.strokeRect(50, 50, 300, 300);
+            // ctx.restore();
+
+            // 线性渐变
+            // var linearGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            // linearGradient.addColorStop(0.0, '#fff');
+            // linearGradient.addColorStop(1.0, '#000');
+            // ctx.fillStyle = linearGradient;
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 径向渐变
+            // var radialGradient = ctx.createRadialGradient(400, 400, 0, 400, 400, 500);
+            // radialGradient.addColorStop(0.0, 'red');
+            // radialGradient.addColorStop(0.25, 'orange');
+            // radialGradient.addColorStop(0.5, 'green');
+            // radialGradient.addColorStop(0.75, 'blue');
+            // radialGradient.addColorStop(1.0, 'black');
+            // ctx.fillStyle = radialGradient;
+            // ctx.fillRect(0, 0, 800, 800);
+
+            // // 
+            // var backCanvas = createBackgroundCanvas();
+            // var pattern = ctx.createPattern(backCanvas, 'repeat')
+            // ctx.fillStyle = pattern;
+            // ctx.fillRect(0, 0, 600, 600);
+
+            // // 圆角矩形
+            // fillRoundRect(ctx, 150, 150, 500, 500, 10, '#bbada0');
+            // for(let i = 0; i < 4; i++){
+            //     for(let j = 0; j < 4; j++){
+            //         fillRoundRect(ctx, 170 + i * 120, 170 + j * 120, 100, 100, 6, '#ccc0b3')
+            //     }
+            // }
+
+            // // arcTo
+            // arcToTest(ctx, 150, 100, 650, 100, 650, 600, 500)
+
+
+        }
+
+        function drawStar(ctx, x, y, R, rotation) {
+
+            ctx.save();
+
+            ctx.translate(x, y);
+            ctx.rotate(rotation / 180 * Math.PI);
+            ctx.scale(R, R);
+            
+            starPath(ctx);
+
+            ctx.fillStyle = "#fb3";
+            // ctx.strokeStyle = "#fd5";
+            // ctx.lineWidth = 3;
+            // ctx.lineJoin = "round";
+
+            ctx.fill();
+            // ctx.stroke();
+
+            ctx.restore();
+
+        }
+
+        function starPath(ctx){
+
+            ctx.beginPath();
+            for(let i = 0; i < 5; i++) {
+                ctx.lineTo(Math.cos((18 + i * 72) / 180 * Math.PI), -Math.sin((18 + i * 72) / 180 * Math.PI));
+                ctx.lineTo(Math.cos((54 + i * 72) / 180 * Math.PI) * 0.5, -Math.sin((54 + i * 72) / 180 * Math.PI) * 0.5);
+            }
+            ctx.closePath();
+
+        }
+
+        function createBackgroundCanvas() {
+            var backCanvas = document.createElement('canvas');
+            backCanvas.width = 100;
+            backCanvas.height = 100;
+            var backCanvasContext = backCanvas.getContext('2d');
+            drawStar(backCanvasContext, 50, 50, 50, 0);
+            return backCanvas
+        }
+
+        function fillRoundRect(ctx, x, y, width, height, radius, fillColor) {
+            if(2 * radius > width || 2 * radius > height){
+                return;
+            }
+            ctx.save();
+            ctx.translate(x, y);
+            pathRoundRect(ctx, width, height, radius);
+            ctx.fillStyle = fillColor || 'black'
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function strokeRoundRect(ctx, x, y, width, height, radius, lineWidth, strokeColor) {
+            if(2 * radius > width || 2 * radius > height){
+                return;
+            }
+            ctx.save();
+            ctx.translate(x, y);
+            pathRoundRect(ctx, width, height, radius);
+            ctx.lineWidth = lineWidth || 1;
+            ctx.strokeStyle = strokeColor || 'black';
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function pathRoundRect(ctx, width, height, radius){
+            ctx.beginPath();
+            ctx.arc(width - radius, height - radius, radius, 0, Math.PI / 2);
+            ctx.lineTo(radius, height);
+            ctx.arc(radius, height - radius, radius, Math.PI / 2, Math.PI);
+            ctx.lineTo(0, radius);
+            ctx.arc(radius, radius, radius, Math.PI, Math.PI * 3 / 2);
+            ctx.lineTo(width - radius, 0);
+            ctx.arc(width - radius, radius, radius, Math.PI * 3 / 2, Math.PI * 2);
+            ctx.closePath();
+        }
+
+        function arcToTest(ctx, x0, y0, x1, y1, x2, y2, radius){
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.arcTo(x1, y1, x2, y2, radius);
+
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = 'red';
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.lineTo(x2, y2);
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+        }
+        
+    </script>
+</body>
+</html>

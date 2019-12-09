@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="margin: 0;">
+    <canvas id="canvas" style="display: block;">当前浏览器不支持Canvas，请更换浏览器后再试</canvas>
+    <script>
+        window.onload = function() {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+
+            canvas.width = document.documentElement.clientWidth;
+            canvas.height = document.documentElement.clientHeight;
+
+            // 线性渐变
+            var skyStyle = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyStyle.addColorStop(0.0, 'black');
+            skyStyle.addColorStop(1.0, '#035');
+            ctx.fillStyle = skyStyle;
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            // 画星星
+            for(let i = 0; i < 200; i ++) {
+                var r = Math.random() * 5 + 5;
+                var x = Math.random() * canvas.width;
+                var y = Math.random() * canvas.height * 0.65;
+                var a = Math.random() * 360;
+                drawStar(ctx, x, y, r, a)
+            }
+
+            fullMoon(ctx, 2, 900, 200, 100, 30);
+            drawLand(ctx)
+
+
+        }
+
+        function drawLand(ctx) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(0, 0.75 * canvas.height);
+            ctx.bezierCurveTo(0.45 * canvas.width, 0.5 * canvas.height, 0.55 * canvas.width, canvas.height, canvas.width, 0.75 * canvas.height);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            var landStyle = ctx.createLinearGradient(0, canvas.height, 0, 0);
+            landStyle.addColorStop(0.0, '#030');
+            landStyle.addColorStop(1.0, '#580');
+            ctx.fillStyle = landStyle;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawStar(ctx, x, y, R, rotation) {
+
+            ctx.save();
+
+            ctx.translate(x, y);
+            ctx.rotate(rotation / 180 * Math.PI);
+            ctx.scale(R, R);
+            
+            starPath(ctx);
+
+            ctx.fillStyle = "#fb3";
+            // ctx.strokeStyle = "#fd5";
+            // ctx.lineWidth = 3;
+            // ctx.lineJoin = "round";
+
+            ctx.fill();
+            // ctx.stroke();
+
+            ctx.restore();
+
+        }
+
+        function starPath(ctx){
+
+            ctx.beginPath();
+            for(let i = 0; i < 5; i++) {
+                ctx.lineTo(Math.cos((18 + i * 72) / 180 * Math.PI), -Math.sin((18 + i * 72) / 180 * Math.PI));
+                ctx.lineTo(Math.cos((54 + i * 72) / 180 * Math.PI) * 0.5, -Math.sin((54 + i * 72) / 180 * Math.PI) * 0.5);
+            }
+            ctx.closePath();
+
+        }
+
+        function createBackgroundCanvas() {
+            var backCanvas = document.createElement('canvas');
+            backCanvas.width = 100;
+            backCanvas.height = 100;
+            var backCanvasContext = backCanvas.getContext('2d');
+            drawStar(backCanvasContext, 50, 50, 50, 0);
+            return backCanvas
+        }
+
+        function fillRoundRect(ctx, x, y, width, height, radius, fillColor) {
+            if(2 * radius > width || 2 * radius > height){
+                return;
+            }
+            ctx.save();
+            ctx.translate(x, y);
+            pathRoundRect(ctx, width, height, radius);
+            ctx.fillStyle = fillColor || 'black'
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function strokeRoundRect(ctx, x, y, width, height, radius, lineWidth, strokeColor) {
+            if(2 * radius > width || 2 * radius > height){
+                return;
+            }
+            ctx.save();
+            ctx.translate(x, y);
+            pathRoundRect(ctx, width, height, radius);
+            ctx.lineWidth = lineWidth || 1;
+            ctx.strokeStyle = strokeColor || 'black';
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function pathRoundRect(ctx, width, height, radius){
+            ctx.beginPath();
+            ctx.arc(width - radius, height - radius, radius, 0, Math.PI / 2);
+            ctx.lineTo(radius, height);
+            ctx.arc(radius, height - radius, radius, Math.PI / 2, Math.PI);
+            ctx.lineTo(0, radius);
+            ctx.arc(radius, radius, radius, Math.PI, Math.PI * 3 / 2);
+            ctx.lineTo(width - radius, 0);
+            ctx.arc(width - radius, radius, radius, Math.PI * 3 / 2, Math.PI * 2);
+            ctx.closePath();
+        }
+
+        function arcToTest(ctx, x0, y0, x1, y1, x2, y2, radius){
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.arcTo(x1, y1, x2, y2, radius);
+
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = 'red';
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.lineTo(x2, y2);
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+        }
+
+        function dis(x1, y1, x2, y2) {
+            return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        }
+
+        function fullMoon(ctx, d, x, y, radius, rotation, fillColor) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation * Math.PI / 180);
+            ctx.scale(radius, radius);
+            pathMoon(ctx, d);
+            ctx.fillStyle = fillColor || '#fb5';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function pathMoon(ctx, d) {
+            ctx.beginPath();
+            ctx.arc(0, 0, 1, 0.5 * Math.PI, 1.5 * Math.PI, true);
+            ctx.moveTo(0, -1);
+            ctx.arcTo(d, 0, 0, 1, dis(0, -1, d, 0) / d);
+            ctx.closePath();
+        }
+        
+    </script>
+</body>
+</html>
