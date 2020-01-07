@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="margin: 0;">
+    <div style="margin:20px auto;display:flex;">
+        <canvas id="canvasa" width="683" height="540" style="display: block;">当前浏览器不支持Canvas，请更换浏览器后再试</canvas>
+        <canvas id="canvasb" width="683" height="540" style="display: block;">当前浏览器不支持Canvas，请更换浏览器后再试</canvas>
+    </div>
+    <div style="text-align: center;margin-top:50px;font-size: 20px;">
+    <a href="javascript: grayEffect()">Gray Effect</a>
+    <a href="javascript: bwEffect()">Black&White Effect</a>
+    <a href="javascript: reverseEffect()">Reverse Effect</a>
+    <a href="javascript: blurEffect()">Blur Effect</a>
+    <a href="javascript: mosaicEffect()">Mosaic Effect</a>
+    </div>
+    <script>
+        var canvasa = document.getElementById('canvasa');
+        var ctxa = canvasa.getContext('2d');
+        var canvasb = document.getElementById('canvasb');
+        var ctxb = canvasb.getContext('2d');
+        var image = new Image();
+
+        window.onload = function() {
+
+            // canvas.width = document.documentElement.clientWidth;
+            // canvas.height = document.documentElement.clientHeight;
+
+            image.src = 'image.png';
+            image.onload = function() {
+                ctxa.drawImage(image, 0, 0, canvasa.width, canvasa.height)
+            }
+        }
+
+        function grayEffect(){
+            var imageData = ctxa.getImageData(0, 0, canvasa.width, canvasa.height)
+            var pixelData = imageData.data
+
+            for(let i = 0; i < canvasb.width * canvasb.height; i++){
+                var r = pixelData[4 * i + 0];
+                var g = pixelData[4 * i + 1];
+                var b = pixelData[4 * i + 2];
+
+                var gray = r * 0.3 + g * 0.59 + b * 0.11;
+
+                pixelData[4 * i + 0] = gray
+                pixelData[4 * i + 1] = gray
+                pixelData[4 * i + 2] = gray
+            }
+
+            ctxb.putImageData(imageData, 0, 0, 0, 0, canvasb.width, canvasb.height)
+        }
+
+        function bwEffect(){
+            var imageData = ctxa.getImageData(0, 0, canvasa.width, canvasa.height)
+            var pixelData = imageData.data
+
+            for(let i = 0; i < canvasb.width * canvasb.height; i++){
+                var r = pixelData[4 * i + 0];
+                var g = pixelData[4 * i + 1];
+                var b = pixelData[4 * i + 2];
+                var v = null;
+
+                var gray = r * 0.3 + g * 0.59 + b * 0.11;
+                if(gray > (255 / 2)){
+                    v = 255;
+                }else{
+                    v = 0
+                }
+
+                pixelData[4 * i + 0] = v
+                pixelData[4 * i + 1] = v
+                pixelData[4 * i + 2] = v
+            }
+
+            ctxb.putImageData(imageData, 0, 0, 0, 0, canvasb.width, canvasb.height)
+        }
+
+        function reverseEffect(){
+            var imageData = ctxa.getImageData(0, 0, canvasa.width, canvasa.height)
+            var pixelData = imageData.data
+
+            for(let i = 0; i < canvasb.width * canvasb.height; i++){
+                var r = pixelData[4 * i + 0];
+                var g = pixelData[4 * i + 1];
+                var b = pixelData[4 * i + 2];
+
+                pixelData[4 * i + 0] = 255 - r
+                pixelData[4 * i + 1] = 255 - g
+                pixelData[4 * i + 2] = 255 - b
+            }
+
+            ctxb.putImageData(imageData, 0, 0, 0, 0, canvasb.width, canvasb.height)
+        }
+
+        function blurEffect(){
+            var tempImageData = ctxa.getImageData(0, 0, canvasa.width, canvasa.height)
+            var tempPixelData = tempImageData.data
+
+            var imageData = ctxa.getImageData(0, 0, canvasa.width, canvasa.height)
+            var pixelData = imageData.data
+
+            var blurR = 3;
+            var totalnum = (2 * blurR + 1) * (2 * blurR + 1)
+
+            for(let i = blurR; i < canvasb.height - blurR; i++){
+                for(let j = blurR; j < canvasb.width - blurR;j++){
+
+                    var totalr = 0;
+                    var totalg = 0;
+                    var totalb = 0;
+
+                    for(let dx = -blurR; dx <= blurR; dx++){
+                        for(let dy = -blurR; dy <= blurR; dy++){
+                            var x = i + dx;
+                            var y = j + dy;
+
+                            var p = x * canvasb.width + y
+                            totalr += tempPixelData[p * 4 + 0]
+                            totalg += tempPixelData[p * 4 + 1]
+                            totalb += tempPixelData[p * 4 + 2]
+                        }
+                    }
+
+                    var p = i * canvasb.width + j
+                    pixelData[p * 4 + 0] = totalr / totalnum
+                    pixelData[p * 4 + 1] = totalg / totalnum
+                    pixelData[p * 4 + 2] = totalb / totalnum
+
+                }
+            }
+
+            ctxb.putImageData(imageData, 0, 0, 0, 0, canvasb.width, canvasb.height)
+        }
+
+        function mosaicEffect(){
+            var tempImageData = ctxa.getImageData(0, 0, canvasa.width, canvasa.height)
+            var tempPixelData = tempImageData.data
+
+            var imageData = ctxa.getImageData(0, 0, canvasa.width, canvasa.height)
+            var pixelData = imageData.data
+
+            var size = 16;
+            var totalnum = size * size
+
+            for(let i = 0; i < canvasb.height; i+= size) {
+                for(let j = 0; j < canvasb.width;j+= size) {
+
+                    var totalr = 0;
+                    var totalg = 0;
+                    var totalb = 0;
+
+                    for(let dx = 0; dx < size; dx++){
+                        for(let dy = 0; dy < size; dy++){
+                            var x = i + dx;
+                            var y = j + dy;
+
+                            var p = x * canvasb.width + y
+                            totalr += tempPixelData[p * 4 + 0]
+                            totalg += tempPixelData[p * 4 + 1]
+                            totalb += tempPixelData[p * 4 + 2]
+                        }
+                    }
+
+                    var p = i * canvasb.width + j
+                    var resr = totalr / totalnum
+                    var resg = totalg / totalnum
+                    var resb = totalb / totalnum
+
+                    for(let dx = 0; dx < size; dx++) {
+                        for(let dy = 0; dy < size; dy++) {
+                            var x = i + dx
+                            var y = j + dy
+
+                            var p = x * canvasb.width + y
+                            pixelData[p * 4 + 0] = resr
+                            pixelData[p * 4 + 1] = resg
+                            pixelData[p * 4 + 2] = resb
+                        }
+                    }
+
+                }
+            }
+
+            ctxb.putImageData(imageData, 0, 0, 0, 0, canvasb.width, canvasb.height)
+        }
+        
+
+
+    </script>
+</body>
+</html>
